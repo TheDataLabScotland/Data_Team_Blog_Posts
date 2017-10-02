@@ -9,7 +9,7 @@ library( mapproj )
 require( RColorBrewer )	
 
 
-crime <- fread( "/home/caterina/Downloads/Crime_Data_from_2010_to_Present.csv" )
+crime <- fread( "/home/caterina/Documents/Data_Team_Blog_Posts/CrimeData/Los_Angeles_Crime_Data_from_2010_to_Present.csv" )
 
 head( crime )
 lat_and_long <- str_split( crime$Location, ", " )
@@ -35,15 +35,42 @@ table( crime$YearOccurred )
 table( crime$YearReported )
 table( crime$TimeOccurred )
 
-map <- get_map( location = 'Los Angeles', zoom = 12, maptype = "roadmap" )
+map <- get_map( location = 'Los Angeles', zoom = 20, maptype = "roadmap" )
 ggmap( map ) +
-  geom_point( data = crime, aes( x = long, y = lat, color = TimeOccurred ), alpha = .35 ) + 
-  facet_grid( ~ YearOccurred, ncol = 4 )
+  geom_point( data = crime[ TimeOccurred > 2300, ], aes( x = long, y = lat, 
+                                 color = TimeOccurred ), 
+              alpha = .35 ) + 
+  facet_grid( ~ YearOccurred )
+
+myplot <- with(crime, plot(TimeOccurred, lat))
+pdf('./Desktop/CrimeDataBogusPlot.pdf', width = 10, height = 10)
+myplot
+dev.off()
+
 
 # source( "MyCloudMadeAPI.R")
 # ?get_cloudmademap
 # qmap( "baylor university", zoom = 14, maptype = 53428, api_key = cloudmade_api_key,
 #       source = "cloudmade" )
+
+
+
+# Can I anonymize this data? ----------------------------------------------
+
+# This is buggy right now:
+
+library(fakeR)
+
+x <- crime[ 1:200, ]
+fake_x <- simulate_dataset( data.frame( x$DRNumber ), use.levels = FALSE )
+
+
+fake_cols <- list()
+for ( column in 1 : ncol( x ) ) {
+   fake_cols[[column]] <- simulate_dataset( as.vector( x[ , column, with = FALSE ] ), use.levels = FALSE, stealth.level = 3, level3.noise = TRUE )
+}
+
+fake_x <- rbindlist( fake_cols )
 
 
 
