@@ -9,7 +9,7 @@ library( mapproj )
 require( RColorBrewer )	
 
 
-crime <- fread( "/home/caterina/Documents/Data_Team_Blog_Posts/CrimeData/Los_Angeles_Crime_Data_from_2010_to_Present.csv" )
+crime <- fread( "/home/caterina/Documents/Data_Team_Blog_Posts/CrimeData/Los_Angeles_Crime_Data_from_2010_to_Present.csv", na.strings = "" )
 
 head( crime )
 lat_and_long <- str_split( crime$Location, ", " )
@@ -62,16 +62,27 @@ dev.off()
 library(fakeR)
 
 x <- crime[ 1:200, ]
-fake_x <- simulate_dataset( data.frame( x$DRNumber ), use.levels = FALSE )
-
+# fake_x <- simulate_dataset( data.frame( x$DRNumber ), use.levels = FALSE )
+lapply(x, is.factor)
 
 fake_cols <- list()
 for ( column in 1 : ncol( x ) ) {
    fake_cols[[column]] <- simulate_dataset( as.vector( x[ , column, with = FALSE ] ), use.levels = FALSE, stealth.level = 3, level3.noise = TRUE )
 }
 
-fake_x <- rbindlist( fake_cols )
+# Strange. fakeR seems to not work on x as a whole data.table or data.frame. The only way I can get it to work is to cycle thru the columns individually - which then, the simulate_dataset() function outputs as 
 
+# lapply(fake_cols, dim)
+# fake_x <- rbindlist( fake_cols )
+# y <- simulate_dataset( x )
+
+
+xyz <- data.table( sapply( fake_cols, "[[", 1 ) )
+setnames( xyz, names( x ) )
+
+
+table( x$VictimSex )
+table( xyz$VictimSex ) # So this thing isn't JUST shuffling the data.
 
 
 
