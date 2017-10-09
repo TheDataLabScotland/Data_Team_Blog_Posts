@@ -4,12 +4,14 @@ library( stringr )
 library( lubridate )
 
 library( ggplot2 )	
-library( ggmap )	
+library( ggmap )
+library( ggrepel )
 library( mapproj )	
 require( RColorBrewer )	
 
+setwd("/home/u010/c_constant/Documents/BlogPosts/CrimeData")
 
-crime <- fread( "/home/caterina/Documents/Data_Team_Blog_Posts/CrimeData/Los_Angeles_Crime_Data_from_2010_to_Present.csv", na.strings = "" )
+crime <- fread( "CrimeData.csv", na.strings = "" )
 
 head( crime )
 lat_and_long <- str_split( crime$Location, ", " )
@@ -35,17 +37,22 @@ table( crime$YearOccurred )
 table( crime$YearReported )
 table( crime$TimeOccurred )
 
-map <- get_map( location = 'Los Angeles', zoom = 20, maptype = "roadmap" )
+map <- get_map( location = 'Los Angeles', zoom = 12, maptype = "roadmap" )
 ggmap( map ) +
-  geom_point( data = crime[ TimeOccurred > 2300, ], aes( x = long, y = lat, 
-                                 color = TimeOccurred ), 
+  geom_point( data = crime[ TimeOccurred > 2300 & VictimAge < 18 & YearOccurred > 2011, ], 
+              aes( x = long, y = lat, color = TimeOccurred ), 
               alpha = .35 ) + 
-  facet_grid( ~ YearOccurred )
+  geom_label_repel(data = crime[ TimeOccurred > 2300 & VictimAge < 18 & YearOccurred > 2011, ], 
+                   aes(x = long, y = lat, label = VictimDescent ), 
+                   fill = "white", box.padding = unit(.4, "lines"),
+                   label.padding = unit(.15, "lines"),
+                   segment.color = "red", segment.size = 1) +
+  facet_grid( VictimSex ~ YearOccurred )
 
-myplot <- with(crime, plot(TimeOccurred, lat))
-pdf('./Desktop/CrimeDataBogusPlot.pdf', width = 10, height = 10)
-myplot
-dev.off()
+# myplot <- with(crime, plot(TimeOccurred, lat))
+# pdf('./Desktop/CrimeDataBogusPlot.pdf', width = 10, height = 10)
+# myplot
+# dev.off()
 
 
 # source( "MyCloudMadeAPI.R")
