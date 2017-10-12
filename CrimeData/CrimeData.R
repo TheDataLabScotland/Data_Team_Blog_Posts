@@ -81,7 +81,7 @@ dev.off()
 # Isolating a specific type of crime, to spot any trends: For this, I have to check all columns (MOCode_1 to MOCode_10) for the following values:
 
 Internet_crimes <- c( "1904", "1905", "1908", "1909", "1911", "1914", "1915", "1916" )
-narcostics_prostitution <- c( "0907", "0908" )
+narcotics_prostitution <- c( "0907", "0908" )
 
 
 Internet_crime_data <- crime[ MOCode_1 %in% Internet_crimes | MOCode_2 %in% Internet_crimes | MOCode_3 %in% Internet_crimes |
@@ -92,10 +92,10 @@ Internet_crime_data <- crime[ MOCode_1 %in% Internet_crimes | MOCode_2 %in% Inte
 
 
 
-Narc_pros_crime_data <- crime[ MOCode_1 %in% narcostics_prostitution | MOCode_2 %in% narcostics_prostitution | MOCode_3 %in% narcostics_prostitution |
-                                MOCode_4 %in% narcostics_prostitution | MOCode_5 %in% narcostics_prostitution | MOCode_6 %in% narcostics_prostitution |
-                                MOCode_7 %in% narcostics_prostitution | MOCode_8 %in% narcostics_prostitution | MOCode_9 %in% narcostics_prostitution |
-                                MOCode_10 %in% narcostics_prostitution, ]
+Narc_pros_crime_data <- crime[ MOCode_1 %in% narcotics_prostitution | MOCode_2 %in% narcotics_prostitution | MOCode_3 %in% narcotics_prostitution |
+                                MOCode_4 %in% narcotics_prostitution | MOCode_5 %in% narcotics_prostitution | MOCode_6 %in% narcotics_prostitution |
+                                MOCode_7 %in% narcotics_prostitution | MOCode_8 %in% narcotics_prostitution | MOCode_9 %in% narcotics_prostitution |
+                                MOCode_10 %in% narcotics_prostitution, ]
 
 # # Swap data used previously with this plot:
 # replot <- get('%+%', 'package:ggplot2')
