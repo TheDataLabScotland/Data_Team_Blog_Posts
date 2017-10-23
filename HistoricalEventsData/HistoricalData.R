@@ -143,20 +143,31 @@ table( full_BBC_events_with_meta$statename )
 # Visualizing the data ----------------------------------------------------
 
 
-average_goldstein <- aggregate( cbind( goldstein, total_sources ) ~ 
-                                  year + countryname + continent,
-                                FUN = mean,
-                                data = full_BBC_events_with_meta )
+average_goldstein <- data.table( aggregate( cbind( goldstein, total_sources ) ~ 
+                                              year + continent,
+                                            FUN = mean,
+                                            data = full_BBC_events_with_meta ) )
 
-# pdf("C:/Users/cconsta2/Desktop/Test.pdf", width = 25, height = 15 )
+
 ggplot( average_goldstein, 
-        aes( y = goldstein, x = as.factor( year ) ) ) +
+        aes( y = goldstein, x = continent ) ) +
   geom_boxplot( position = "dodge", varwidth = FALSE ) +
-  facet_grid( ~ continent, drop = TRUE ) +
+  facet_wrap( ~ year, drop = TRUE, ncol = 5 ) +
+  geom_point( aes( color = total_sources ), alpha = 0.1, size = 0.5 ) +
   theme( axis.text.x = element_text( angle = 90, hjust = 1, size = 0.7 ) )
-# dev.off()
 
-# Too much data, so this is illegible. Further work pending.
+
+# First 5 years seem to have next to no data. 
+# Since they are not particularly interesting, they shall be removed.
+
+# pdf("C:/Users/cconsta2/Desktop/Test.pdf", width = 15, height = 30 )
+ggplot( average_goldstein[ year > 1977, ], 
+        aes( y = goldstein, x = continent ) ) +
+  # geom_boxplot( position = "dodge", varwidth = FALSE ) +
+  facet_wrap( ~ year, drop = TRUE, ncol = 5 ) +
+  geom_bar( stat = "identity" ) +
+  theme( axis.text.x = element_text( angle = 90, hjust = 1, size = 12 ) )
+# dev.off()
 
 # save.image("HistoricalDataRObjects.RData")
 
