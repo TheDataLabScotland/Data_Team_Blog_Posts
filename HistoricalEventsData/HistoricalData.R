@@ -305,24 +305,6 @@ ggplot( goldstein_country_in_continent[ continent == "Western Europe", ],
 
 
 
-# png( "test1.png", width = 1800, height = 1200 )
-p <- ggplot( goldstein_country_in_continent_by_year[ continent == "Central Europe", ], 
-             aes( x = goldstein, y = countryname, 
-                  group = countryname, 
-                  color = countryname,
-                  size = total_sources,
-                  frame = year,
-                  cumulative = FALSE ) ) +
-  geom_vline( xintercept = 0, color = "black", lty = "dashed", size = 0.3 ) +
-  geom_vline( xintercept = -5, color = "black", lty = "dashed", size = 0.3 ) +
-  geom_vline( xintercept = 5, color = "black", lty = "dashed", size = 0.3 ) +
-  geom_point( alpha = 0.5 ) + guides( color = FALSE ) +
-  xlim( -10, 10 ) +
-  theme( text = element_text( size = 16 ) ) +
-  labs( size = "Event importance", x = "Average Goldstein rating", y = "Country" )
-# dev.off()
-
-gganimate( p, filename = "~/Desktop/CentralEurope.gif", ani.width = 800, ani.height = 500 ) # , interval = 1.5
 
 
 # > unique(goldstein_country_in_continent_by_year$continent)
@@ -333,17 +315,39 @@ gganimate( p, filename = "~/Desktop/CentralEurope.gif", ani.width = 800, ani.hei
 # [17] "South Asia"                "South Pacific"             "Southeast Asia"            "Southern Africa"          
 # [21] "US"                        "Western Africa"            "Western Europe"            "Western Indian Ocean" 
 
+p <- ggplot( goldstein_country_in_continent_by_year[ continent == "Western Europe" | continent == "South Asia", ], 
+             aes( x = goldstein, y = countryname, 
+                  group = countryname, 
+                  color = countryname,
+                  size = total_sources,
+                  frame = year,
+                  cumulative = FALSE ) ) +
+  geom_vline( xintercept = 0, color = "black", lty = "dashed", size = 0.3 ) +
+  geom_vline( xintercept = -5, color = "black", lty = "dashed", size = 0.3 ) +
+  geom_vline( xintercept = 5, color = "black", lty = "dashed", size = 0.3 ) +
+  geom_point( ) + guides( color = FALSE ) +
+  xlim( -10, 10 ) +
+  theme( text = element_text( size = 16 ) ) +
+  labs( size = "Event\n importance", x = "Average Goldstein rating", y = "Country" ) +
+  facet_wrap( ~ continent, ncol = 2, scales = "free"  )
 
-# Now to swap this subset for another:
-p2 <- p %+% goldstein_country_in_continent_by_year[ continent == "Western Africa", ]
-gganimate( p2, filename = "~/Desktop/BadPlace.gif", ani.width = 800, ani.height = 500 ) # , interval = 1.5
+gganimate( p, filename = "~/Desktop/WesternEuropeVsSouthAsia.gif", ani.width = 1400, ani.height = 500 ) # , interval = 1.5
 
 
 
 
+# Now can swap this subset for another:
+
+p2 <- p %+% goldstein_country_in_continent_by_year[ continent == "Western Africa" | continent == "Eastern Africa", ]
+gganimate( p2, filename = "~/Desktop/EasternVsWesternAfrica.gif", ani.width = 1200, ani.height = 500 ) 
 
 
-# save.image("HistoricalDataRObjects.RData")
+p3 <- p %+% goldstein_country_in_continent_by_year[ continent == "Western Europe" | continent == "Central Europe", ]
+gganimate( p3, filename = "~/Desktop/CentralVsWesternEurope.gif", ani.width = 1400, ani.height = 500 ) 
+
+
+
+# save.image( "HistoricalDataRObjects.RData" )
 
 
 
