@@ -154,8 +154,6 @@ goldstein_country_in_continent_by_year <- data.table( aggregate( cbind( goldstei
                                                                    year + countryname + continent,
                                                                  FUN = mean,
                                                                  data = full_BBC_events_with_meta ) )
-# goldstein_country_in_continent_by_year <- goldstein_country_in_continent_by_year[ order( continent, -goldstein ), ]
-# goldstein_country_in_continent_by_year[ , ]
 
 # And now collapsing across years:
 goldstein_country_in_continent <- data.table( aggregate( cbind( goldstein, total_sources ) ~ 
