@@ -347,6 +347,13 @@ gganimate( p3, filename = "~/Desktop/CentralVsWesternEurope.gif", ani.width = 14
 
 
 
+# Seems a bit crowded... So how about we pick one area and just focus on the animation within it, instead of splitting attention between two panels:
+p4 <- p %+% goldstein_country_in_continent_by_year[ continent == "Caribbean", ]
+gganimate( p4, filename = "~/Desktop/Caribbean.gif", ani.width = 750, ani.height = 500 ) 
+
+
+
+
 # save.image( "HistoricalDataRObjects.RData" )
 
 
