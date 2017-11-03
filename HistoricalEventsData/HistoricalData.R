@@ -225,23 +225,23 @@ violin <- ggplot( two_level_aggregates[ year > 1977 & continent == "Central Euro
   geom_violin( position = "dodge", 
                draw_quantiles = c( 0.25, 0.50, 0.75), 
                trim = TRUE ) +
-  geom_text( aes( x = countryname, y = 8.5, label = countryname ), angle = 90, size = 8 ) +
+  geom_text( aes( x = countryname, y = 8.5, label = countryname ), angle = 90, size = 6 ) +
   ylim( -10, 10 ) +
   guides( fill = FALSE ) +
-  theme( axis.text.y = element_text( size = 20 ),
-         axis.title.y = element_text( size = 30 ),
+  theme( axis.text.y = element_text( size = 15 ),
+         axis.title.y = element_text( size = 25 ),
          axis.title.x = element_blank(),
          axis.text.x = element_blank(),
          axis.ticks.x = element_blank()	) +
   labs( y = "Average Goldstein rating" )
 
 
-png( "ViolinCentralEurope.png", width = 900, height = 1000 )
+png( "ViolinCentralEurope.png", width = 800, height = 800 )
 print( violin )
 dev.off()
 
 
-png( "ViolinWesternEurope.png", width = 900, height = 1000 )
+png( "ViolinWesternEurope.png", width = 900, height = 900 )
 violin %+% two_level_aggregates[ year > 1977 & continent == "Western Europe", ]
 dev.off()
 
