@@ -216,47 +216,33 @@ dev.off()
 
 # Using violin plots to show whether some countries spend more time at the extremes of the Goldstein scale.
 # Let's pick a couple of continents / areas for this:
-png( "ViolinCentralEurope.png", width = 2600, height = 3000 )
-ggplot( two_level_aggregates[ year > 1977 & continent == "Central Europe", ], 
-        aes( y = goldstein, x = countryname, 
-             group = countryname, fill = countryname ) ) +
+violin <- ggplot( two_level_aggregates[ year > 1977 & continent == "Central Europe", ], 
+                  aes( y = goldstein, x = countryname, 
+                       group = countryname, fill = countryname ) ) +
   geom_hline( yintercept = 0, color = "black", lty = "dashed", size = 0.3 ) +
   geom_hline( yintercept = -5, color = "black", lty = "dashed", size = 0.3 ) +
   geom_hline( yintercept = 5, color = "black", lty = "dashed", size = 0.3 ) +
   geom_violin( position = "dodge", 
                draw_quantiles = c( 0.25, 0.50, 0.75), 
                trim = TRUE ) +
-  geom_text( aes( x = countryname, y = 8.5, label = countryname ), angle = 90, size = 23 ) +
+  geom_text( aes( x = countryname, y = 8.5, label = countryname ), angle = 90, size = 8 ) +
   ylim( -10, 10 ) +
   guides( fill = FALSE ) +
-  theme( axis.text.y = element_text( size = 60 ),
-         axis.title.y = element_text( size = 70 ),
-	 axis.title.x = element_blank(),
-	 axis.text.x = element_blank(),
-	 axis.ticks.x = element_blank()	) +
+  theme( axis.text.y = element_text( size = 20 ),
+         axis.title.y = element_text( size = 30 ),
+         axis.title.x = element_blank(),
+         axis.text.x = element_blank(),
+         axis.ticks.x = element_blank()	) +
   labs( y = "Average Goldstein rating" )
+
+
+png( "ViolinCentralEurope.png", width = 900, height = 1000 )
+print( violin )
 dev.off()
 
 
-png( "ViolinWesternEurope.png", width = 3000, height = 3000 )
-ggplot( two_level_aggregates[ year > 1977 & continent == "Western Europe", ], 
-        aes( y = goldstein, x = countryname, 
-             group = countryname, fill = countryname ) ) +
-  geom_hline( yintercept = 0, color = "black", lty = "dashed", size = 0.3 ) +
-  geom_hline( yintercept = -5, color = "black", lty = "dashed", size = 0.3 ) +
-  geom_hline( yintercept = 5, color = "black", lty = "dashed", size = 0.3 ) +
-  geom_violin( position = "dodge", 
-               draw_quantiles = c( 0.25, 0.50, 0.75), 
-               trim = TRUE ) +
-  geom_text( aes( x = countryname, y = 8.5, label = countryname ), angle = 90, size = 23 ) +
-  ylim( -10, 10 ) +
-  guides( fill = FALSE ) +
-  theme( axis.text.y = element_text( size = 60 ),
-	 axis.title.y = element_text( size = 70 ),
-	 axis.title.x = element_blank(),
-	 axis.text.x = element_blank(),
-	 axis.ticks.x = element_blank()	) +
-  labs( y = "Average Goldstein rating" )
+png( "ViolinWesternEurope.png", width = 900, height = 1000 )
+violin %+% two_level_aggregates[ year > 1977 & continent == "Western Europe", ]
 dev.off()
 
 
@@ -342,13 +328,6 @@ gganimate( p2, filename = "~/Desktop/EasternVsWesternAfrica.gif", ani.width = 12
 
 p3 <- p %+% goldstein_country_in_continent_by_year[ continent == "Western Europe" | continent == "Central Europe", ]
 gganimate( p3, filename = "~/Desktop/CentralVsWesternEurope.gif", ani.width = 1400, ani.height = 500 ) 
-
-
-
-# Seems a bit crowded... So how about we pick one area and just focus on the animation within it, instead of splitting attention between two panels:
-p4 <- p %+% goldstein_country_in_continent_by_year[ continent == "Caribbean", ]
-gganimate( p4, filename = "~/Desktop/Caribbean.gif", ani.width = 750, ani.height = 500 ) 
-
 
 
 
