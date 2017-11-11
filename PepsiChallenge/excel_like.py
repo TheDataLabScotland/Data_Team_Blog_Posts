@@ -6,7 +6,6 @@ import numpy as np
 data = pd.read_excel(r"C:\Users\Richard\Documents\Work\Blog\Data_Team_Blog_Posts\PepsiChallenge\Pepsi Challenge Results.xlsx")
 print data
 
-
 print len(data)
 print data.shape
 
