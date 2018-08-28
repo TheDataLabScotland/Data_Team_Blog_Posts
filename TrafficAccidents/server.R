@@ -7,7 +7,6 @@ library(scales)
 library(lattice)
 library(dplyr)
 
-accidentData <- readRDS("data/accidentData.rds")
 
 # Leaflet bindings are a bit slow; for now we'll just sample to compensate
 set.seed(100)
@@ -69,36 +68,6 @@ function(input, output, session) {
     print(xyplot(income ~ college, data = zipsInBounds(), xlim = range(allzips$college), ylim = range(allzips$income)))
   })
   
-  # This observer is responsible for maintaining the circles and legend,
-  # according to the variables the user has chosen to map to color and size.
-  observe({
-    colorBy <- input$color
-    sizeBy <- input$size
-    
-    if (colorBy == "superzip") {
-      # Color and palette are treated specially in the "superzip" case, because
-      # the values are categorical instead of continuous.
-      colorData <- ifelse(zipdata$centile >= (100 - input$threshold), "yes", "no")
-      pal <- colorFactor("viridis", colorData)
-    } else {
-      colorData <- zipdata[[colorBy]]
-      pal <- colorBin("viridis", colorData, 7, pretty = FALSE)
-    }
-    
-    if (sizeBy == "superzip") {
-      # Radius is treated specially in the "superzip" case.
-      radius <- ifelse(zipdata$centile >= (100 - input$threshold), 30000, 3000)
-    } else {
-      radius <- zipdata[[sizeBy]] / max(zipdata[[sizeBy]]) * 30000
-    }
-    
-    leafletProxy("map", data = zipdata) %>%
-      clearShapes() %>%
-      addCircles(~longitude, ~latitude, radius=radius, layerId=~zipcode,
-                 stroke=FALSE, fillOpacity=0.4, fillColor=pal(colorData)) %>%
-      addLegend("bottomleft", pal=pal, values=colorData, title=colorBy,
-                layerId="colorLegend")
-  })
   
   # Show a popup at the given location
   showZipcodePopup <- function(zipcode, lat, lng) {
@@ -215,29 +184,38 @@ function(input, output, session) {
   
   output$timeline <- renderLeaflet({
     
-    power<-accidentData%>%
+    plotData<-accidentData%>%filter(Accident_Severity %in% input$severity &
+                                      Light_Conditions %in% input$light &
+                                      Local_Authority_.District. %in% input$district &
+                                      Year==input$year &
+                                      Weather_Conditions %in% input$weather &
+                                      Speed_limit>=input$speed[1] &
+                                      Speed_limit<=input$speed[2] &
+                                      Number_of_Vehicles>=input$vehicles[1] &
+                                      Number_of_Vehicles<=input$vehicles[2])%>%
       mutate(Date=as.Date(Date))%>%
       mutate(start=as.Date(format(Date, "%d-%m-%Y"), format="%d-%m-%Y"))%>%
       select(Longitude, Latitude, start)%>%
       mutate(end=start+1)
     
+    print(nrow(plotData))
     
     #power$end <- power$Date
     
-    power_geo <- geojson_json(power[1:1000,],lat="Latitude",lon="Longitude")
+    plotData_geo <- geojson_json(plotData,lat="Latitude",lon="Longitude")
     
     leaf <- leaflet() %>%
       addTiles()
     
     # add leaflet-timeline as a dependency
     #  to get the js and css
-    leaf$dependencies[[length(leaf$dependencies)+1]] <- htmlDependency(
-      name = "leaflet-timeline",
-      version = "1.0.0",
-      src = c("href" = "http://skeate.github.io/Leaflet.timeline/"),
-      script = "javascripts/leaflet.timeline.js",
-      stylesheet = "stylesheets/leaflet.timeline.css"
-    )
+    # leaf$dependencies[[length(leaf$dependencies)+1]] <- htmlDependency(
+    #   name = "leaflet-timeline",
+    #   version = "1.0.0",
+    #   src = c("href" = "http://skeate.github.io/Leaflet.timeline/"),
+    #   script = "javascripts/leaflet.timeline.js",
+    #   stylesheet = "stylesheets/leaflet.timeline.css"
+    # )
     
     # use the new onRender in htmlwidgets to run
     #  this code once our leaflet map is rendered
@@ -247,7 +225,7 @@ function(input, output, session) {
       onRender(sprintf(
         '
         function(el,x){
-        var power_data = %s;
+        var plotData = %s;
         
         var timelineControl = L.timelineSliderControl({
         formatOutput: function(date) {
@@ -255,7 +233,7 @@ function(input, output, session) {
         }
         });
         
-        var timeline = L.timeline(power_data, {
+        var timeline = L.timeline(plotData, {
         pointToLayer: function(data, latlng){
         var hue_min = 120;
         var hue_max = 0;
@@ -275,19 +253,10 @@ function(input, output, session) {
         timeline.addTo(HTMLWidgets.find(".leaflet").getMap());
         }
         ',
-        data=power_geo
+        data=plotData_geo
       ))%>%
       setView(lng = -3.9, lat = 57, zoom = 6.5)
     
-    # rezoom <- "first"
-    # # If zoom button was clicked this time, and store the value, and rezoom
-    # if (!identical(lastZoomButtonValue, input$zoomButton)) {
-    #   lastZoomButtonValue <<- input$zoomButton
-    #   rezoom <- "always"
-    # }
-    # 
-    # leaf <- leaf %>% mapOptions(zoomToLimits = rezoom)
-    # 
     leaf
   })
   

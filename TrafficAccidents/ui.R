@@ -9,7 +9,6 @@ vars <- c(
   "Population" = "adultpop"
 )
 
-
 navbarPage("Traffic Accidents in Scotland", id="nav",
            
            tabPanel("Timeline Map",
@@ -31,10 +30,16 @@ navbarPage("Traffic Accidents in Scotland", id="nav",
                                       draggable = TRUE, top = 60, left = "auto", right = 20, bottom = "auto",
                                       width = 330, height = "auto",
                                       
-                                      h2("ZIP explorer"),
+                                      h2("Accident Explorer"),
                                       
-                                      selectInput("color", "Color", vars),
-                                      selectInput("size", "Size", vars, selected = "adultpop"),
+                                      selectInput("severity", "Accident Severity", severityList, multiple = TRUE, selected=c("Serious")),
+                                      selectInput("light", "Light Conditions", lightList, multiple = TRUE, selected="Daylight"),
+                                      selectInput("weather", "Weather Conditions", weatherList, multiple = TRUE, selected="Fine no high winds"),
+                                      selectInput("district", "District", districtList, multiple = TRUE, selected="Highland"),
+                                      selectInput("year", "Year", yearList, selected=max(yearList)),
+                                      sliderInput("vehicles", "Number of Involved Vehicles", min=min(vehicleNumberList), max=max(vehicleNumberList), value=c(min(vehicleNumberList), max(vehicleNumberList)), round=TRUE),
+                                      sliderInput("speed", "Speed Limit", min=min(speedList, na.rm = TRUE), max=max(speedList, na.rm=TRUE), value=c(min(speedList, na.rm=TRUE), max(speedList, na.rm = TRUE)), round=TRUE),
+                                      
                                       conditionalPanel("input.color == 'superzip' || input.size == 'superzip'",
                                                        # Only prompt for threshold when coloring or sizing by superzip
                                                        numericInput("threshold", "SuperZIP threshold (top n percentile)", 5)
