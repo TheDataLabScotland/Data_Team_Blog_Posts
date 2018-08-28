@@ -4,6 +4,10 @@ accidentData<-read.csv("data/Accident_Information.csv")%>%filter(InScotland=="Ye
 
 vehicleData<-read.csv("data/Vehicle_Information.csv")
 
+
+
+saveRDS(unique(as.character(makeList$make)), file = "data/makes.rds")
+
 mergedData<-accidentData%>%left_join(vehicleData, by="Accident_Index")%>%
   group_by(Accident_Index)%>%
   mutate(makes=paste0(make, collapse = ""))%>%
@@ -13,5 +17,10 @@ mergedData<-accidentData%>%left_join(vehicleData, by="Accident_Index")%>%
   rename(Year=Year.x)%>%
   distinct(Accident_Index, .keep_all = TRUE)%>%
   ungroup()
+
+vehicleData<-vehicleData%>%filter(Accident_Index %in% mergedData$Accident_Index)
   
 saveRDS(mergedData, file = "data/accidentData.rds")
+
+saveRDS(vehicleData, file = "data/vehicleData.rds")
+

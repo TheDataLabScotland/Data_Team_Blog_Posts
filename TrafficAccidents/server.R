@@ -184,6 +184,8 @@ function(input, output, session) {
   
   output$timeline <- renderLeaflet({
     
+    relevantVehicles<-vehicleData%>%filter(make %in% input$make)
+    
     plotData<-accidentData%>%filter(Accident_Severity %in% input$severity &
                                       Light_Conditions %in% input$light &
                                       Local_Authority_.District. %in% input$district &
@@ -192,7 +194,8 @@ function(input, output, session) {
                                       Speed_limit>=input$speed[1] &
                                       Speed_limit<=input$speed[2] &
                                       Number_of_Vehicles>=input$vehicles[1] &
-                                      Number_of_Vehicles<=input$vehicles[2])%>%
+                                      Number_of_Vehicles<=input$vehicles[2] &
+                                      Accident_Index %in% relevantVehicles$Accident_Index)%>%
       mutate(Date=as.Date(Date))%>%
       mutate(start=as.Date(format(Date, "%d-%m-%Y"), format="%d-%m-%Y"))%>%
       select(Longitude, Latitude, start)%>%
