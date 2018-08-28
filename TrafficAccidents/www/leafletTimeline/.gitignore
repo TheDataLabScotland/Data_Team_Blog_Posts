@@ -1,8 +1,0 @@
-bower_components
-.sass-cache
-gh-pages
-npm-debug.log
-node_modules
-coverage
-dist
-.tern-port
