@@ -13,3 +13,7 @@ $(document).on("click", ".go-map", function(e) {
     nonce: Math.random()
   });
 });
+
+$('play').click(function(){
+    $("play").click();
+});

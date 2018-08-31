@@ -43,7 +43,93 @@ h1, h2, h3, h4 { font-weight: 400; }
   font-size: 12px;
 }
 
+
 /* If not using map tiles, show a white background */
+/*
 .leaflet-container {
   background-color: white !important;
 }
+
+.button-container button {
+      position: relative;
+      width: 5%;
+      height: 15px; }
+
+.leaflet-timeline-controls {
+  width: 300px;
+  text-align: center; }
+
+.leaflet-timeline-controls{
+    vertical-align: middle; }
+
+.leaflet-timeline-controls .button-container {
+    float: left;
+    width: 50%; }  
+    
+button {
+      position: relative;
+      width: 33%;
+      height: 20px; }
+
+button::after {
+        content: "";
+        position: absolute; }    
+
+button.prev::before {
+        width: 2px;
+        height: 14px;
+        margin-top: -7px;
+        margin-left: -7px; }
+        
+
+button.prev::after {
+        border: 7px solid transparent;
+        border-width: 7px 10px 7px 0;
+        border-right-color: black;
+        margin-top: -7px;
+        margin-left: -5px;
+        background: transparent; 
+        margin: -8px 0 0;
+        background: black; 
+}
+
+button.pause {
+    display: inline-block;
+}
+
+
+
+
+button.play::before {
+        border: 7px solid transparent;
+        border-width: 7px 0 7px 10px;
+        border-left-color: black;
+        margin-top: -7px;
+        background: transparent;
+        margin-left: -5px; }
+        
+
+
+          
+
+button.next::after {
+        margin: -8px 0 0;
+        background: black; }
+        
+button.next::before {
+        width: 2px;
+        height: 14px;
+        margin-top: -7px;
+        margin-left: 5px; }
+        
+
+    
+button.next::after {
+        border: 7px solid transparent;
+        border-width: 7px 0 7px 10px;
+        border-left-color: black;
+        margin-top: -7px;
+        margin-left: -5px;
+        background: transparent; }
+       
+        */
