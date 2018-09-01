@@ -12,7 +12,7 @@ accidentData<-accidentData%>%
          Longitude, Latitude, Road_Surface_Conditions, Speed_limit, Weather_Conditions,
          Local_Authority_.District., Year, Day_of_Week, Time)%>%
   mutate(TimeSegment=as.POSIXct(as.character(Time), format = "%H:%M"))%>%
-  mutate(TimeSegment=as.POSIXct(round(as.double(TimeSegment)/(30*60))*(30*60)+3600,origin=(as.POSIXct('1970-01-01'))))%>%
+  mutate(TimeSegment=as.POSIXct(round(as.double(TimeSegment)/(60*60))*(60*60)+3600,origin=(as.POSIXct('1970-01-01'))))%>%
   mutate(TimeSegment=strftime(TimeSegment, format = "%H:%M"))
 
 

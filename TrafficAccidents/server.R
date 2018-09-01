@@ -22,6 +22,7 @@ function(input, output, session) {
                             Weather_Conditions %in% input$weather &
                             Speed_limit>=input$speed[1] &
                             Speed_limit<=input$speed[2] &
+                            Day_of_Week %in% input$day &
                             Accident_Index %in% vehicles1()$Accident_Index)
   })
   
@@ -33,6 +34,7 @@ function(input, output, session) {
                             Weather_Conditions %in% input$weather2 &
                             Speed_limit>=input$speed2[1] &
                             Speed_limit<=input$speed2[2] &
+                            Day_of_Week %in% input$day2 &
                             Accident_Index %in% vehicles2()$Accident_Index)
   })
   
@@ -44,7 +46,7 @@ function(input, output, session) {
     vehicleData%>%filter(make %in% input$make)
   })
   
-  output$info1 <- renderValueBox({
+  labels1<-reactive({
     if(length(input$year)==1)
     {
       years<-as.character(input$year)
@@ -53,14 +55,21 @@ function(input, output, session) {
       yearListLength<-length(input$year)
       years<-paste0(input$year[1], " - ", input$year[yearListLength])
     }
-    valueBox(
-      paste(input$district)
-      ,paste(years)
-      ,icon = icon("stats",lib='glyphicon')
-      ,color = "purple")  
+    
+    if(length(input$day)==1)
+    {
+      days<-as.character(input$day)
+    } else
+    {
+      dayListLength<-length(input$day)
+      days<-paste0(input$day[1], " - ", input$day[dayListLength])
+    }
+    
+    c(input$district, years, days)
+    
   })
   
-  output$info2 <- renderValueBox({
+  labels2<-reactive({
     if(length(input$year2)==1)
     {
       years<-as.character(input$year2)
@@ -69,12 +78,56 @@ function(input, output, session) {
       yearListLength<-length(input$year2)
       years<-paste0(input$year2[1], " - ", input$year2[yearListLength])
     }
+    
+    if(length(input$day2)==1)
+    {
+      days<-as.character(input$day2)
+    } else
+    {
+      dayListLength<-length(input$day2)
+      days<-paste0(input$day2[1], " - ", input$day2[dayListLength])
+    }
+    
+    c(input$district2, years, days)
+    
+  })
+  
+  graphLabel1 <- reactive({
+    
+    thisLabel<-c()
+    if(labels1()[1]!=labels2()[1]) return(paste(labels1()[1], collapse = "_"))
+    if(labels1()[2]!=labels2()[2]) return(paste(labels1()[2], collapse = "_"))
+    if(labels1()[3]!=labels2()[3]) return(paste(labels1()[3], collapse = "_"))
+    
+    return(labels1()[1])
+  })
+  
+  graphLabel2 <- reactive({
+    
+    if(labels2()[1]!=labels1()[1]) return(paste(labels2()[1], collapse = "_"))
+    if(labels2()[2]!=labels1()[2]) return(paste(labels2()[2], collapse = "_"))
+    if(labels2()[3]!=labels1()[3]) return(paste(labels2()[3], collapse = "_"))
+    
+    return(labels2()[1])
+  })
+  
+  output$info1 <- renderValueBox({
     valueBox(
-      paste(input$district2)
-      ,paste(years)
+      paste(labels1()[1])
+      ,paste0(labels1()[2], ", ", labels1()[3])
       ,icon = icon("stats",lib='glyphicon')
       ,color = "purple")  
   })
+  
+  output$info2 <- renderValueBox({
+    valueBox(
+      paste(labels2()[1])
+      ,paste0(labels2()[2], ", ", labels2()[3])
+      ,icon = icon("stats",lib='glyphicon')
+      ,color = "purple")   
+  })
+  
+  
   
   
   output$fatality1 <- renderValueBox({
@@ -115,6 +168,20 @@ function(input, output, session) {
       theme(axis.text.x=element_text(angle=45, hjust=1))+
       xlab("Time of the Day")+
       ylab("Percentage of Total Accidents")
+  })
+  
+  output$overTime <- renderPlot({
+    allAccidents<-rbind(accidents1(), accidents2())
+    allAccidents$group<-c(rep(graphLabel1(), nrow(accidents1())), rep(graphLabel2(), nrow(accidents2())))
+
+    allAccidents<-allAccidents%>%group_by(group)%>%mutate(totalNumOfAccidents=n())%>%
+      group_by(group, TimeSegment)%>%summarise(percentage=n()/max(totalNumOfAccidents))%>%filter(!is.na(TimeSegment))
+
+    ggplot(allAccidents, aes(x=TimeSegment, y=percentage, fill=group))+
+      geom_bar(stat = "identity", position = "identity", alpha = 0.5)+
+      scale_y_continuous(labels=percent)+
+      labs(x="", y="", fill="")+
+      theme_traffic()
   })
   
   output$overSpeed1 <- renderPlot({
@@ -165,22 +232,6 @@ function(input, output, session) {
              longitude >= lngRng[1] & longitude <= lngRng[2])
   })
   
-  # Precalculate the breaks we'll need for the two histograms
-  centileBreaks <- hist(plot = FALSE, allzips$centile, breaks = 20)$breaks
-  
-  output$histCentile <- renderPlot({
-    # If no zipcodes are in view, don't plot
-    if (nrow(zipsInBounds()) == 0)
-      return(NULL)
-    
-    hist(zipsInBounds()$centile,
-         breaks = centileBreaks,
-         main = "SuperZIP score (visible zips)",
-         xlab = "Percentile",
-         xlim = range(allzips$centile),
-         col = '#00DD00',
-         border = 'white')
-  })
   
   output$scatterCollegeIncome <- renderPlot({
     # If no zipcodes are in view, don't plot

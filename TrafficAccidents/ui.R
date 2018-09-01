@@ -13,40 +13,41 @@ navbarPage("Traffic Accidents in Scotland", id="nav",
                         width=400,
                       column(6,
                         pickerInput("severity", "Accident Severity", as.character(severityList), options = list("actions-box" = TRUE), multiple = TRUE, selected=severityList),
-                        pickerInput("light", "Light Conditions", as.character(lightList), options = list("actions-box" = TRUE), multiple = TRUE, selected="Daylight"),
-                        pickerInput("weather", "Weather Conditions", as.character(weatherList), options = list("actions-box" = TRUE), multiple = TRUE, selected="Fine no high winds"),
-                        pickerInput("district", "District", as.character(districtList), options = list("actions-box" = TRUE), multiple = TRUE, selected="Edinburgh, City of"),
+                        pickerInput("light", "Light Conditions", as.character(lightList), options = list("actions-box" = TRUE), multiple = TRUE, selected=lightList),
+                        pickerInput("weather", "Weather Conditions", as.character(weatherList), options = list("actions-box" = TRUE), multiple = TRUE, selected=weatherList),
+                        pickerInput("district", "District", as.character(districtList), options = list("actions-box" = TRUE), multiple = FALSE, selected="Edinburgh, City of"),
                         pickerInput("make", "Car Make", choices=as.character(makeList), options = list("actions-box" = TRUE), multiple = TRUE, selected = makeList),
                         pickerInput("year", "Year", yearList, options = list("actions-box" = TRUE), selected=max(yearList), multiple = TRUE),
+                        pickerInput("day", "Day", levels(dayList), options = list("actions-box" = TRUE), multiple = TRUE, selected = dayList),
                         sliderInput("speed", "Speed Limit", min=min(speedList, na.rm = TRUE), max=max(speedList, na.rm=TRUE), value=c(min(speedList, na.rm=TRUE), max(speedList, na.rm = TRUE)), round=TRUE)
                              
                       ),
                       column(6,
                              pickerInput("severity2", "Accident Severity", as.character(severityList), options = list("actions-box" = TRUE), multiple = TRUE, selected=severityList),
-                             pickerInput("light2", "Light Conditions", as.character(lightList), options = list("actions-box" = TRUE), multiple = TRUE, selected="Daylight"),
-                             pickerInput("weather2", "Weather Conditions", as.character(weatherList), options = list("actions-box" = TRUE), multiple = TRUE, selected="Fine no high winds"),
-                             pickerInput("district2", "District", as.character(districtList), options = list("actions-box" = TRUE), multiple = TRUE, selected="Glasgow City"),
+                             pickerInput("light2", "Light Conditions", as.character(lightList), options = list("actions-box" = TRUE), multiple = TRUE, selected=lightList),
+                             pickerInput("weather2", "Weather Conditions", as.character(weatherList), options = list("actions-box" = TRUE), multiple = TRUE, selected=weatherList),
+                             pickerInput("district2", "District", as.character(districtList), options = list("actions-box" = TRUE), multiple = FALSE, selected="Glasgow City"),
                              pickerInput("make2", "Car Make", choices=as.character(makeList), options = list("actions-box" = TRUE), multiple = TRUE, selected = makeList),
                              pickerInput("year2", "Year", yearList, options = list("actions-box" = TRUE), selected=max(yearList), multiple = TRUE),
+                             pickerInput("day2", "Day", levels(dayList), options = list("actions-box" = TRUE), multiple = TRUE, selected = dayList),
                              sliderInput("speed2", "Speed Limit", min=min(speedList, na.rm = TRUE), max=max(speedList, na.rm=TRUE), value=c(min(speedList, na.rm=TRUE), max(speedList, na.rm = TRUE)), round=TRUE)
                       )
                       ),
                       
                       dashboardBody(
                         fluidRow(
-                          valueBoxOutput("info1", width = 3),
+                          valueBoxOutput("info1", width = 4),
                           valueBoxOutput("fatality1", width = 2),
-                          valueBoxOutput("placeholder1", width = 1),
-                          valueBoxOutput("info2", width = 3),
+                          valueBoxOutput("info2", width = 4),
                           valueBoxOutput("fatality2", width = 2)
                         ),
                         fluidRow( 
                           box(
-                            title = "Accidents by hour"
+                            title = "Distribution of Accidents during the Day"
                             ,status = "primary"
                             ,solidHeader = TRUE 
                             ,collapsible = FALSE 
-                            ,plotOutput("overTime1", height = "300px")
+                            ,plotOutput("overTime", height = "300px")
                           )
                           ,box(
                             title = "Accidents by hour"
