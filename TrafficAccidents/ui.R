@@ -1,31 +1,53 @@
 library(leaflet)
 library(shinyWidgets)
 library(shinydashboard)
+library(shinydashboardPlus)
+library(shinyBS)
 
 
-navbarPage("Traffic Accidents in Scotland", id="nav",
-           
-           tabPanel("Comparison Dashboard",
-            
+
                     dashboardPage(
-                      dashboardHeader(titleWidth = 0),
+                      dashboardHeader(
+                                          title = "Traffic Accidents in Scotland",
+                                          titleWidth = 300,
+                                          tags$li(class = "dropdown",
+                                                  tags$li(class = "dropdown",
+                                                          socialButton(
+                                                            url = "http://github.com/TheDataLabScotland/Data_Team_Blog_Posts/tree/master/TrafficAccidents",
+                                                            type = "github"
+                                                          ),
+                                                          style = "padding-top: 7px; padding-bottom: 5px; padding-right: 20px; "))
+                                    
+                                          ),
                       dashboardSidebar(
+                         HTML("<br>"),
+                         HTML("<div class='titles'>Selection 1</div>"),
+                         pickerInput("district", "Area", sort(as.character(districtList)), options = list("actions-box" = TRUE), multiple = FALSE, selected="Edinburgh, City of"),
+                         pickerInput("year", "Year", yearList, options = list("actions-box" = TRUE), selected=c(2010:2016), multiple = TRUE),
+                         pickerInput("day", "Day", levels(dayList), options = list("actions-box" = TRUE), multiple = TRUE, selected = dayList),
+                         HTML("<br>"),
+                         HTML("<div class='titles'>Selection 2</div>"),
+                         pickerInput("district2", "Area", sort(as.character(districtList)), options = list("actions-box" = TRUE), multiple = FALSE, selected="Glasgow City"),
+                         pickerInput("year2", "Year", yearList, options = list("actions-box" = TRUE), selected=c(2010:2016), multiple = TRUE),
+                         pickerInput("day2", "Day", levels(dayList), options = list("actions-box" = TRUE), multiple = TRUE, selected = dayList)
                         
-                        pickerInput("district", "Area", sort(as.character(districtList)), options = list("actions-box" = TRUE), multiple = FALSE, selected="Edinburgh, City of"),
-                        pickerInput("year", "Year", yearList, options = list("actions-box" = TRUE), selected=max(yearList), multiple = TRUE),
-                        pickerInput("day", "Day", levels(dayList), options = list("actions-box" = TRUE), multiple = TRUE, selected = dayList),
-
-                        pickerInput("district2", "Area", sort(as.character(districtList)), options = list("actions-box" = TRUE), multiple = FALSE, selected="Glasgow City"),
-                        pickerInput("year2", "Year", yearList, options = list("actions-box" = TRUE), selected=max(yearList), multiple = TRUE),
-                        pickerInput("day2", "Day", levels(dayList), options = list("actions-box" = TRUE), multiple = TRUE, selected = dayList)
-                        ),
+                         ),
                       
                       dashboardBody(
+                        
                         fluidRow(
-                          valueBoxOutput("info1", width = 4),
-                          valueBoxOutput("fatality1", width = 2),
-                          valueBoxOutput("info2", width = 4),
-                          valueBoxOutput("fatality2", width = 2)
+                          valueBoxOutput("info1", width = 6),
+                          valueBoxOutput("info2", width = 6)
+                        ),
+                        fluidRow(
+                          
+                          valueBoxOutput("fatal1", width = 2),
+                          valueBoxOutput("severe1", width = 2),
+                          valueBoxOutput("minor1", width = 2),
+                          
+                          valueBoxOutput("fatal2", width = 2),
+                          valueBoxOutput("severe2", width = 2),
+                          valueBoxOutput("minor2", width = 2)
                         ),
                         fluidRow( 
                           box(
@@ -58,39 +80,9 @@ navbarPage("Traffic Accidents in Scotland", id="nav",
                             ,collapsible = FALSE 
                             ,plotOutput("byDriverAge", height = "300px")
                           ) 
-                        )
+                        ),
+                        tags$head(tags$style(HTML('.titles {font-weight:bold; text-align:center;
+                                                  background-image: linear-gradient(#3c8dbc, #222d32)}')))
                         
                       ))
                     
-           ),
-           
-           tabPanel("Interactive Map",
-                    fluidRow(
-                      column(3,
-                             selectInput("states", "States", c("All states"="", structure(state.abb, names=state.name), "Washington, DC"="DC"), multiple=TRUE)
-                      ),
-                      column(3,
-                             conditionalPanel("input.states",
-                                              selectInput("cities", "Cities", c("All cities"=""), multiple=TRUE)
-                             )
-                      ),
-                      column(3,
-                             conditionalPanel("input.states",
-                                              selectInput("zipcodes", "Zipcodes", c("All zipcodes"=""), multiple=TRUE)
-                             )
-                      )
-                    ),
-                    fluidRow(
-                      column(1,
-                             numericInput("minScore", "Min score", min=0, max=100, value=0)
-                      ),
-                      column(1,
-                             numericInput("maxScore", "Max score", min=0, max=100, value=100)
-                      )
-                    ),
-                    hr(),
-                    DT::dataTableOutput("ziptable")
-           ),
-           
-           conditionalPanel("false", icon("crosshair"))
-)

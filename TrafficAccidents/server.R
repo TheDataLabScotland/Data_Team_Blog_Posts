@@ -9,8 +9,12 @@ library(dplyr)
 library(plotly)
 library(scales)
 
+options(scipen = 999)
+
 
 function(input, output, session) {
+  
+  options(scipen = 999)
   
   ## for the dashboard
   
@@ -118,22 +122,56 @@ function(input, output, session) {
   })
   
   
-  
-  
-  output$fatality1 <- renderValueBox({
+  output$fatal1 <- renderValueBox({
     fatalityPerc<-nrow(accidents1()%>%filter(Accident_Severity=="Fatal"))/nrow(accidents1())*100
     valueBox(
-      paste0(formatC(fatalityPerc, digits=1, big.mark=','), "%")
-      ,paste('Fatality Percentage')
+      paste0(formatC(fatalityPerc, digits=1), "%")
+      ,paste('Fatal Accidents')
       ,icon = icon("info-sign",lib='glyphicon')
       ,color = "light-blue")  
   })
   
-  output$fatality2 <- renderValueBox({
+  output$fatal2 <- renderValueBox({
     fatalityPerc<-nrow(accidents2()%>%filter(Accident_Severity=="Fatal"))/nrow(accidents2())*100
     valueBox(
-      paste0(formatC(fatalityPerc, digits=1, big.mark=','), "%")
-      ,paste('Fatality Percentage')
+      paste0(formatC(fatalityPerc, digits=1), "%")
+      ,paste('Fatal Accidents')
+      ,icon = icon("info-sign",lib='glyphicon')
+      ,color = "light-blue")  
+  })
+  
+  output$severe1 <- renderValueBox({
+    fatalityPerc<-nrow(accidents1()%>%filter(Accident_Severity=="Serious"))/nrow(accidents1())*100
+    valueBox(
+      paste0(formatC(fatalityPerc, digits=3), "%")
+      ,paste('Severe Accidents')
+      ,icon = icon("info-sign",lib='glyphicon')
+      ,color = "light-blue")  
+  })
+  
+  output$severe2 <- renderValueBox({
+    fatalityPerc<-nrow(accidents2()%>%filter(Accident_Severity=="Serious"))/nrow(accidents2())*100
+    valueBox(
+      paste0(formatC(fatalityPerc, digits=3), "%")
+      ,paste('Severe Accidents')
+      ,icon = icon("info-sign",lib='glyphicon')
+      ,color = "light-blue")  
+  })
+  
+  output$minor1 <- renderValueBox({
+    fatalityPerc<-nrow(accidents1()%>%filter(Accident_Severity=="Slight"))/nrow(accidents1())*100
+    valueBox(
+      paste0(formatC(fatalityPerc, digits=3), "%")
+      ,paste('Minor Accidents')
+      ,icon = icon("info-sign",lib='glyphicon')
+      ,color = "light-blue")  
+  })
+  
+  output$minor2 <- renderValueBox({
+    fatalityPerc<-nrow(accidents2()%>%filter(Accident_Severity=="Slight"))/nrow(accidents2())*100
+    valueBox(
+      paste0(formatC(fatalityPerc, digits=3), "%")
+      ,paste('Minor Accidents')
       ,icon = icon("info-sign",lib='glyphicon')
       ,color = "light-blue")  
   })
@@ -173,7 +211,7 @@ function(input, output, session) {
     
     allVehicles<-allVehicles%>%group_by(group)%>%mutate(totalNumOfVehicles=n())%>%
       group_by(group, Age_Band_of_Driver)%>%summarise(percentage=n()/max(totalNumOfVehicles))%>%
-      filter(!(Age_Band_of_Driver %in% c(NA, "Data missing or out of range", "6 - 10", "11 - 15")))
+      filter(!(Age_Band_of_Driver %in% c(NA, "Data missing or out of range", "0 - 5", "6 - 10", "11 - 15")))
     
     ggplot(allVehicles, aes(x=Age_Band_of_Driver, y=percentage, fill=group))+
       geom_bar(stat = "identity", position = "identity", alpha = 0.5)+
