@@ -1,11 +1,11 @@
 library(dplyr)
 
-options(scipen = 999)
-
+# read data from local rds files
 accidentData <- readRDS("data/accidentData.rds")
 
 vehicleData <- readRDS("data/vehicleData.rds")
 
+# create lists for dropdowns
 dayList<-factor(unique(accidentData$Day_of_Week), levels = c("Monday", "Tuesday", "Wednesday",
                                                              "Thursday", "Friday", "Saturday",
                                                              "Sunday"))
@@ -20,7 +20,7 @@ makeList<-unique(vehicleData$make)
 yearList<-unique(accidentData$Year)
 
 
-
+# global ggplot theme
 theme_traffic<-function (base_size = 11, base_family = "") 
 {
   half_line <- base_size/2

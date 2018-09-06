@@ -19,7 +19,8 @@ accidentData<-accidentData%>%
 
 
 vehicleData<-vehicleData%>%filter(Accident_Index %in% accidentData$Accident_Index)%>%
-  left_join(accidentData)%>%mutate(Vehicle_Manoeuvre=as.character(Vehicle_Manoeuvre))
+  left_join(accidentData)%>%mutate(Vehicle_Manoeuvre=as.character(Vehicle_Manoeuvre),
+                                   Vehicle_Type=gsub(" .*", "", Vehicle_Type))
 
 #cleaning the journey purpose field
 vehicleData$Vehicle_Manoeuvre[vehicleData$Vehicle_Manoeuvre %like% "Changing lane"]<-"Changing lane"

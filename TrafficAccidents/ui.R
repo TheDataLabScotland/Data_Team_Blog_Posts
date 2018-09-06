@@ -24,12 +24,12 @@ library(shinyBS)
                          HTML("<div class='titles'>Selection 1</div>"),
                          pickerInput("district", "Area", sort(as.character(districtList)), options = list("actions-box" = TRUE), multiple = FALSE, selected="Edinburgh, City of"),
                          pickerInput("year", "Year", yearList, options = list("actions-box" = TRUE), selected=c(2010:2016), multiple = TRUE),
-                         pickerInput("day", "Day", levels(dayList), options = list("actions-box" = TRUE), multiple = TRUE, selected = dayList),
+                         pickerInput("day", "Day of Week", levels(dayList), options = list("actions-box" = TRUE), multiple = TRUE, selected = dayList),
                          HTML("<br>"),
                          HTML("<div class='titles'>Selection 2</div>"),
                          pickerInput("district2", "Area", sort(as.character(districtList)), options = list("actions-box" = TRUE), multiple = FALSE, selected="Glasgow City"),
                          pickerInput("year2", "Year", yearList, options = list("actions-box" = TRUE), selected=c(2010:2016), multiple = TRUE),
-                         pickerInput("day2", "Day", levels(dayList), options = list("actions-box" = TRUE), multiple = TRUE, selected = dayList)
+                         pickerInput("day2", "Day of Week", levels(dayList), options = list("actions-box" = TRUE), multiple = TRUE, selected = dayList)
                         
                          ),
                       
@@ -74,11 +74,11 @@ library(shinyBS)
                             ,plotOutput("byManoeuvre", height = "300px")
                           )
                           ,box(
-                            title = "Age Distribution of Drivers Involved in Accidents"
+                            title = "Road Surface Conditions During Accident"
                             ,status = "primary"
                             ,solidHeader = TRUE 
                             ,collapsible = FALSE 
-                            ,plotOutput("byDriverAge", height = "300px")
+                            ,plotOutput("byJourneyPurpose", height = "300px")
                           ) 
                         ),
                         tags$head(tags$style(HTML('.titles {font-weight:bold; text-align:center;

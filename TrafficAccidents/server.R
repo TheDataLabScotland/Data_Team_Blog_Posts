@@ -9,12 +9,9 @@ library(dplyr)
 library(plotly)
 library(scales)
 
-options(scipen = 999)
 
 
 function(input, output, session) {
-  
-  options(scipen = 999)
   
   ## for the dashboard
   
@@ -205,17 +202,17 @@ function(input, output, session) {
       theme_traffic()
   })
   
-  output$byDriverAge <- renderPlot({
+  output$byRoadSurface <- renderPlot({
     allVehicles<-rbind(vehicles1(), vehicles2())
     allVehicles$group<-c(rep(graphLabel1(), nrow(vehicles1())), rep(graphLabel2(), nrow(vehicles2())))
     
     allVehicles<-allVehicles%>%group_by(group)%>%mutate(totalNumOfVehicles=n())%>%
-      group_by(group, Age_Band_of_Driver)%>%summarise(percentage=n()/max(totalNumOfVehicles))%>%
-      filter(!(Age_Band_of_Driver %in% c(NA, "Data missing or out of range", "0 - 5", "6 - 10", "11 - 15")))
+      group_by(group, Vehicle_Type)%>%summarise(percentage=n()/max(totalNumOfVehicles))%>%
+      filter(!(Vehicle_Type %in% c(NA, "Data missing or out of range", "Unknown", "Other")))
     
-    ggplot(allVehicles, aes(x=Age_Band_of_Driver, y=percentage, fill=group))+
+    ggplot(allVehicles, aes(x=Vehicle_Type, y=percentage, fill=group))+
       geom_bar(stat = "identity", position = "identity", alpha = 0.5)+
-      scale_y_continuous(labels=percent, limits = c(0, 0.3))+
+      scale_y_continuous(labels=percent)+#, limits = c(0, 0.3)
       labs(x="", y="", fill="")+
       theme_traffic()
   })
