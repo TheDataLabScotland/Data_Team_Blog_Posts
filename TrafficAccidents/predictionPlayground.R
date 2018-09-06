@@ -49,7 +49,7 @@ finalDataset<-allPermutaions%>%left_join(accidentData, by=c("Date", "TimeSegment
 
 set.seed(123)
 
-trainIndex<-createDataPartition(finalDataset$AccidentCount, p=0.8, list=FALSE)
+trainIndex<-createDataPartition(finalDataset$AccidentCount, p=0.8 list=FALSE)
 
 train<-finalDataset[trainIndex, ]
 test<-finalDataset[-trainIndex, ]
@@ -65,12 +65,12 @@ model <- caret::train(x=train[,1:5], y=train[,6],
 
 preds <- predict(model, test[,1:5], type="prob")
 
-#MAE(preds$predictions, test$AccidentCount)
+
 LogLoss(preds[,2], test$AccidentCountNumeric)
-LogLoss(preds$predictions[,2], test$AccidentCount)
-#test$preds<-preds$predictions[,2]
+
 test$preds<-preds[,2]
 
 length(which(test$preds>=0.5 & test$AccidentCountNumeric==1))/length(which(test$AccidentCountNumeric==1))
 length(which(test$preds<0.5 & test$AccidentCountNumeric==0))/length(which(test$AccidentCountNumeric==0))
 
+saveRDS(model, file = "data/model.rds")
