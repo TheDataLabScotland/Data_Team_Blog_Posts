@@ -5,6 +5,7 @@ library(scales)
 library(lattice)
 library(dplyr)
 library(scales)
+library(ggplot2)
 
 
 
@@ -40,30 +41,13 @@ function(input, output, session) {
     timeSteps<-Sys.time()+stepsAhead
     
     dataset<-expand.grid(datetime=timeSteps, Area=c(input$district, input$district2))%>%
-      mutate(Area=as.character(Area),
-             Day_of_Week=weekdays(datetime),
-             Month=month.abb[as.numeric(format(datetime, "%m"))],
-             Bank_Holiday=ifelse(datetime %in% bankHolidayList$Date, "Yes", "No"),
+      mutate(Area=factor(Area, levels=districtList),
+             Day_of_Week=factor(weekdays(datetime), levels=dayList),
+             Month=factor(month.abb[as.numeric(format(datetime, "%m"))], levels = month.abb),
+             Bank_Holiday=factor(ifelse(datetime %in% bankHolidayList$Date, "Yes", "No"), levels =c("No", "Yes")),
              TimeSegment=as.numeric(gsub(":.*", "", as.character(strftime(datetime, format="%H:%M"))))%/%6+1,
              datetime=NULL)
-    # this produces a dataset that looks like this:
-    #   Area Day_of_Week Month Bank_Holiday TimeSegment
-    # 1  Edinburgh, City of      Friday   Sep           No           3
-    # 2  Edinburgh, City of      Friday   Sep           No           4
-    # 3  Edinburgh, City of    Saturday   Sep           No           1
-    # 4  Edinburgh, City of    Saturday   Sep           No           2
-    # 5  Edinburgh, City of    Saturday   Sep           No           3
-    # 6  Edinburgh, City of    Saturday   Sep           No           4
-    # 7  Edinburgh, City of      Sunday   Sep           No           1
-    # 8  Edinburgh, City of      Sunday   Sep           No           2
-    # 9        Glasgow City      Friday   Sep           No           3
-    # 10       Glasgow City      Friday   Sep           No           4
-    # 11       Glasgow City    Saturday   Sep           No           1
-    # 12       Glasgow City    Saturday   Sep           No           2
-    # 13       Glasgow City    Saturday   Sep           No           3
-    # 14       Glasgow City    Saturday   Sep           No           4
-    # 15       Glasgow City      Sunday   Sep           No           1
-    # 16       Glasgow City      Sunday   Sep           No           2
+
   })
   
   # produce predictions reactively
@@ -79,24 +63,7 @@ function(input, output, session) {
                                 predictions=preds[,2])%>%
       mutate(xLabels=paste(Day_of_Week, hourList[TimeSegment]))
     
-    # this outputs something like this (predictions being the model's risk predction):
-    #   Area TimeSegment Day_of_Week predictions           xLabels
-    # 1  Edinburgh, City of           3      Friday   0.6520889   Friday 12pm-6pm
-    # 2  Edinburgh, City of           4      Friday   0.5743273   Friday 6pm-12am
-    # 3  Edinburgh, City of           1    Saturday   0.2041248 Saturday 12am-6am
-    # 4  Edinburgh, City of           2    Saturday   0.5464998 Saturday 6am-12pm
-    # 5  Edinburgh, City of           3    Saturday   0.6156699 Saturday 12pm-6pm
-    # 6  Edinburgh, City of           4    Saturday   0.5196448 Saturday 6pm-12am
-    # 7  Edinburgh, City of           1      Sunday   0.4065399   Sunday 12am-6am
-    # 8  Edinburgh, City of           2      Sunday   0.4882825   Sunday 6am-12pm
-    # 9        Glasgow City           3      Friday   0.6763118   Friday 12pm-6pm
-    # 10       Glasgow City           4      Friday   0.6234673   Friday 6pm-12am
-    # 11       Glasgow City           1    Saturday   0.2390006 Saturday 12am-6am
-    # 12       Glasgow City           2    Saturday   0.6203835 Saturday 6am-12pm
-    # 13       Glasgow City           3    Saturday   0.7017921 Saturday 12pm-6pm
-    # 14       Glasgow City           4    Saturday   0.5589943 Saturday 6pm-12am
-    # 15       Glasgow City           1      Sunday   0.4143968   Sunday 12am-6am
-    # 16       Glasgow City           2      Sunday   0.5637810   Sunday 6am-12pm
+
   })
   
   # reactive graph labeling
@@ -319,7 +286,8 @@ function(input, output, session) {
       geom_line(aes(group=Area), size=1)+
       labs(x="", y="Risk", fill="")+
       scale_y_continuous(labels=percent, limits = c(0, 1))+
-      theme_traffic()
+      theme_traffic()+
+      theme(axis.text.x=element_text(angle=0))
     
   })
   

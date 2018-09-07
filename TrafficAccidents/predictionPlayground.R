@@ -5,7 +5,7 @@ library(xlsx)
 library(ranger)
 library(MLmetrics)
 
-bankHolidayList<-read.xlsx("data/bankHolidaysScotland.xlsx", sheetIndex = 1)
+bankHolidayList<-read.xlsx("data/BankHolidaysScotland.xlsx", sheetIndex = 1)
 
 accidentData <- readRDS("data/accidentData.rds")%>%
   select(Accident_Severity, Date, Weather_Conditions, Local_Authority_.District., Day_of_Week,
@@ -37,9 +37,10 @@ allPermutations<-expand.grid(Date=unique(accidentData$Date), TimeSegment=unique(
   mutate(Area=as.character(Area))
 
 finalDataset<-allPermutations%>%left_join(accidentData, by=c("Date", "TimeSegment", "Area"))%>%
-  mutate(Day_of_Week=weekdays(Date),
-         Month=month.abb[as.numeric(format(as.Date(Date), "%m"))],
-         Bank_Holiday=ifelse(Date %in% bankHolidayList$Date, "Yes", "No"),
+  mutate(Area=as.factor(Area),
+    Day_of_Week=as.factor(weekdays(Date)),
+         Month=as.factor(month.abb[as.numeric(format(as.Date(Date), "%m"))]),
+         Bank_Holiday=as.factor(ifelse(Date %in% bankHolidayList$Date, "Yes", "No")),
          AccidentCount=ifelse(is.na(AccidentCount), 0, AccidentCount))%>%
   select(-Weather, -Wind, -Date)%>%
   mutate(AccidentCountNumeric=ifelse(AccidentCount>0, 1, 0),
@@ -56,14 +57,14 @@ test<-finalDataset[-trainIndex, ]
 
 train_control <- trainControl(method="none", sampling = "down", classProbs = TRUE)
 
-grid <- expand.grid(mtry=c(2), splitrule=c("gini"), min.node.size=c(3))
+grid <- expand.grid(mtry=2, splitrule=c("gini"), min.node.size=c(3))
 
 model <- caret::train(x=train[,1:5], y=train[,6],
                trControl=train_control, method="ranger",
                tuneGrid=grid
                )
 
-preds <- predict(model, test[,1:5], type="prob")
+preds <- predict(model, test, type = "prob")
 
 
 LogLoss(preds[,2], test$AccidentCountNumeric)
