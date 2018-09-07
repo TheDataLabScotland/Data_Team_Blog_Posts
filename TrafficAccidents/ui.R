@@ -78,7 +78,7 @@ library(shinyBS)
                             ,status = "primary"
                             ,solidHeader = TRUE 
                             ,collapsible = FALSE 
-                            ,plotOutput("byJourneyPurpose", height = "300px")
+                            ,plotOutput("byRoadSurface", height = "300px")
                           ) 
                         ),
                         fluidRow(

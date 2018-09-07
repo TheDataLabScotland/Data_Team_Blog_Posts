@@ -4,7 +4,7 @@ library(xlsx)
 # read data from local rds files
 accidentData <- readRDS("data/accidentData.rds")
 vehicleData <- readRDS("data/vehicleData.rds")
-riskModel <- readRDS("data/model.rds") # <-------------------the pre-trained model is being loaded here
+riskModel <- readRDS("data/model.rds")
 
 
 # create lists for dropdowns

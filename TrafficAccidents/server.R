@@ -240,10 +240,11 @@ function(input, output, session) {
     allVehicles$group<-c(rep(graphLabel1(), nrow(vehicles1())), rep(graphLabel2(), nrow(vehicles2())))
     
     allVehicles<-allVehicles%>%group_by(group)%>%mutate(totalNumOfVehicles=n())%>%
-      group_by(group, Vehicle_Type)%>%summarise(percentage=n()/max(totalNumOfVehicles))%>%
-      filter(!(Vehicle_Type %in% c(NA, "Data missing or out of range", "Unknown", "Other")))
+      group_by(group, Road_Surface_Conditions)%>%summarise(percentage=n()/max(totalNumOfVehicles))%>%
+      filter(Road_Surface_Conditions %in% c("Dry", "Frost or ice", "Snow", "Wet or damp"))%>%
+      mutate(Road_Surface_Conditions=factor(Road_Surface_Conditions, levels=c("Snow", "Frost or ice", "Wet or damp", "Dry")))
     
-    ggplot(allVehicles, aes(x=Vehicle_Type, y=percentage, fill=group))+
+    ggplot(allVehicles, aes(x=Road_Surface_Conditions, y=percentage, fill=group))+
       geom_bar(stat = "identity", position = "identity", alpha = 0.5)+
       scale_y_continuous(labels=percent)+#, limits = c(0, 0.3)
       labs(x="", y="", fill="")+
