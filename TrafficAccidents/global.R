@@ -1,9 +1,11 @@
 library(dplyr)
+library(xlsx)
 
 # read data from local rds files
 accidentData <- readRDS("data/accidentData.rds")
-
 vehicleData <- readRDS("data/vehicleData.rds")
+riskModel <- readRDS("data/model.rds") # <-------------------the pre-trained model is being loaded here
+
 
 # create lists for dropdowns
 dayList<-factor(unique(accidentData$Day_of_Week), levels = c("Monday", "Tuesday", "Wednesday",
@@ -18,6 +20,11 @@ weatherList<-unique(accidentData$Weather_Conditions)
 districtList<-unique(as.character(accidentData$Local_Authority_.District.))
 makeList<-unique(vehicleData$make)
 yearList<-unique(accidentData$Year)
+
+hourList<-c("12am-6am", "6am-12pm", "12pm-6pm", "6pm-12am")
+
+bankHolidayList<-read.xlsx("data/bankHolidaysScotland.xlsx", sheetIndex = 1)
+
 
 
 # global ggplot theme

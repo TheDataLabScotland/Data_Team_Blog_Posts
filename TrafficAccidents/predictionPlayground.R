@@ -32,11 +32,11 @@ accidentData <- readRDS("data/accidentData.rds")%>%
             Wind=names(which.max(table(Wind))),
             AccidentCount=n())
 
-allPermutaions<-expand.grid(Date=unique(accidentData$Date), TimeSegment=unique(accidentData$TimeSegment),
+allPermutations<-expand.grid(Date=unique(accidentData$Date), TimeSegment=unique(accidentData$TimeSegment),
                             Area=unique(accidentData$Area))%>%
   mutate(Area=as.character(Area))
 
-finalDataset<-allPermutaions%>%left_join(accidentData, by=c("Date", "TimeSegment", "Area"))%>%
+finalDataset<-allPermutations%>%left_join(accidentData, by=c("Date", "TimeSegment", "Area"))%>%
   mutate(Day_of_Week=weekdays(Date),
          Month=month.abb[as.numeric(format(as.Date(Date), "%m"))],
          Bank_Holiday=ifelse(Date %in% bankHolidayList$Date, "Yes", "No"),
@@ -49,7 +49,7 @@ finalDataset<-allPermutaions%>%left_join(accidentData, by=c("Date", "TimeSegment
 
 set.seed(123)
 
-trainIndex<-createDataPartition(finalDataset$AccidentCount, p=0.8 list=FALSE)
+trainIndex<-createDataPartition(finalDataset$AccidentCount, p=0.8, list=FALSE)
 
 train<-finalDataset[trainIndex, ]
 test<-finalDataset[-trainIndex, ]

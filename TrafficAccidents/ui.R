@@ -81,6 +81,16 @@ library(shinyBS)
                             ,plotOutput("byJourneyPurpose", height = "300px")
                           ) 
                         ),
+                        fluidRow(
+                          box(
+                            title = "Traffic Accident Risk Estimation",
+                            status = "primary",
+                            solidHeader = TRUE,
+                            collapsible = FALSE,
+                            width = 12,
+                            plotOutput("riskEstimation", height = "300px")
+                          )
+                        ),
                         tags$head(tags$style(HTML('.titles {font-weight:bold; text-align:center;
                                                   background-image: linear-gradient(#3c8dbc, #222d32)}')))
                         
