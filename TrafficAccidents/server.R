@@ -61,7 +61,8 @@ function(input, output, session) {
                                 TimeSegment=riskPredictionData()["TimeSegment"],
                                 Day_of_Week=riskPredictionData()["Day_of_Week"],
                                 predictions=preds[,2])%>%
-      mutate(xLabels=paste(Day_of_Week, hourList[TimeSegment]))
+      mutate(xLabels=paste(Day_of_Week, hourList[TimeSegment]),
+             plotOrder=rep(seq(1:(nrow(preds)/2)), 2))
     
 
   })
@@ -283,7 +284,7 @@ function(input, output, session) {
   
   output$riskEstimation <- renderPlot({
     
-    ggplot(riskPredictions(), aes(x=xLabels, y=predictions, colour=Area))+
+    ggplot(riskPredictions(), aes(x=reorder(xLabels, plotOrder) , y=predictions, colour=Area))+
       geom_line(aes(group=Area), size=1)+
       labs(x="", y="Risk", fill="")+
       scale_y_continuous(labels=percent, limits = c(0, 1))+
