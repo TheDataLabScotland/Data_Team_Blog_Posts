@@ -9,8 +9,7 @@ vehicleData<-read.csv("data/Vehicle_Information.csv")
 
 
 accidentData<-accidentData%>%
-  select(Accident_Index, Accident_Severity, Date, Light_Conditions, Number_of_Vehicles,
-         Longitude, Latitude, Road_Surface_Conditions, Speed_limit, Weather_Conditions,
+  select(Accident_Index, Accident_Severity, Date, Longitude, Latitude, Road_Surface_Conditions,
          Local_Authority_.District., Year, Day_of_Week, Time)%>%
   mutate(TimeSegment=as.POSIXct(as.character(Time), format = "%H:%M"))%>%
   mutate(TimeSegment=as.POSIXct(round(as.double(TimeSegment)/(60*60))*(60*60)+3600,origin=(as.POSIXct('1970-01-01'))))%>%
@@ -19,8 +18,8 @@ accidentData<-accidentData%>%
 
 
 vehicleData<-vehicleData%>%filter(Accident_Index %in% accidentData$Accident_Index)%>%
-  left_join(accidentData)%>%mutate(Vehicle_Manoeuvre=as.character(Vehicle_Manoeuvre),
-                                   Vehicle_Type=gsub(" .*", "", Vehicle_Type))
+  select(Accident_Index, Vehicle_Manoeuvre)%>%
+  mutate(Vehicle_Manoeuvre=as.character(Vehicle_Manoeuvre))
 
 #cleaning the journey purpose field
 vehicleData$Vehicle_Manoeuvre[vehicleData$Vehicle_Manoeuvre %like% "Changing lane"]<-"Changing lane"

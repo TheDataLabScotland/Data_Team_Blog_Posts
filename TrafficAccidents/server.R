@@ -6,10 +6,32 @@ library(lattice)
 library(dplyr)
 library(scales)
 library(ggplot2)
+library(caret)
+library(e1071)
+library(ranger)
 
 
 
 function(input, output, session) {
+  
+  observeEvent(input$about, {
+    shinyalert(
+      title = "Traffic Accidents in Scotland",
+      text = "This dashboard lets you analyse traffic accidents across Scotland. <br> Try changing the filters on the panel to compare different <b>areas</b>, <b>years</b> and <b>week days</b>. <br> At the bottom of the page you'll find an estimation of traffic accident risk for the next 48 hours.",
+      closeOnEsc = TRUE,
+      closeOnClickOutside = TRUE,
+      html = TRUE,
+      type = "info",
+      showConfirmButton = TRUE,
+      showCancelButton = FALSE,
+      confirmButtonText = "OK",
+      confirmButtonCol = "#AEDEF4",
+      timer = 0,
+      imageUrl = "",
+      animation = TRUE
+    )
+  })
+  
   
   # preparing reactive datasets
   
@@ -134,17 +156,26 @@ function(input, output, session) {
     return(labels2()[1])
   })
   
+  
   # outputs (valueboxes + plots)
   
   output$info1 <- renderValueBox({
+    addTooltip(session, "info1", paste0("Currently comparing ", graphLabel1(), " to ", graphLabel2()),
+               placement = "bottom", trigger = "hover",
+               options = NULL)
+    
     valueBox(
       paste(labels1()[1])
       ,paste0(labels1()[2], ", ", labels1()[3])
       ,icon = icon("map-marker",lib='glyphicon')
-      ,color = "light-blue")  
+      ,color = "light-blue")
   })
   
   output$info2 <- renderValueBox({
+    addTooltip(session, "info2", paste0("Currently comparing ", graphLabel1(), " to ", graphLabel2()),
+               placement = "bottom", trigger = "hover",
+               options = NULL)
+    
     valueBox(
       paste(labels2()[1])
       ,paste0(labels2()[2], ", ", labels2()[3])
@@ -237,15 +268,15 @@ function(input, output, session) {
   })
   
   output$byRoadSurface <- renderPlot({
-    allVehicles<-rbind(vehicles1(), vehicles2())
-    allVehicles$group<-c(rep(graphLabel1(), nrow(vehicles1())), rep(graphLabel2(), nrow(vehicles2())))
+    allAccidents<-rbind(accidents1(), accidents2())
+    allAccidents$group<-c(rep(graphLabel1(), nrow(accidents1())), rep(graphLabel2(), nrow(accidents2())))
     
-    allVehicles<-allVehicles%>%group_by(group)%>%mutate(totalNumOfVehicles=n())%>%
-      group_by(group, Road_Surface_Conditions)%>%summarise(percentage=n()/max(totalNumOfVehicles))%>%
+    allAccidents<-allAccidents%>%group_by(group)%>%mutate(totalNumOfAccidents=n())%>%
+      group_by(group, Road_Surface_Conditions)%>%summarise(percentage=n()/max(totalNumOfAccidents))%>%
       filter(Road_Surface_Conditions %in% c("Dry", "Frost or ice", "Snow", "Wet or damp"))%>%
       mutate(Road_Surface_Conditions=factor(Road_Surface_Conditions, levels=c("Snow", "Frost or ice", "Wet or damp", "Dry")))
     
-    ggplot(allVehicles, aes(x=Road_Surface_Conditions, y=percentage, fill=group))+
+    ggplot(allAccidents, aes(x=Road_Surface_Conditions, y=percentage, fill=group))+
       geom_bar(stat = "identity", position = "identity", alpha = 0.5)+
       scale_y_continuous(labels=percent)+#, limits = c(0, 0.3)
       labs(x="", y="", fill="")+

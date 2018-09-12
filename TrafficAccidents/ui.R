@@ -3,6 +3,8 @@ library(shinyWidgets)
 library(shinydashboard)
 library(shinydashboardPlus)
 library(shinyBS)
+library(shinyalert)
+library(shinycssloaders)
 
 
 
@@ -16,25 +18,35 @@ library(shinyBS)
                                                             url = "http://github.com/TheDataLabScotland/Data_Team_Blog_Posts/tree/master/TrafficAccidents",
                                                             type = "github"
                                                           ),
+                                                          style = "padding-top: 7px; padding-bottom: 5px; padding-right: 20px; "),
+                                                  tags$li(class = "dropdown",
+                                                          actionButton("about", "About"),
                                                           style = "padding-top: 7px; padding-bottom: 5px; padding-right: 20px; "))
                                     
                                           ),
                       dashboardSidebar(
+                        useShinyalert(),
                          HTML("<br>"),
-                         HTML("<div class='titles'>Selection 1</div>"),
+                         HTML("<div class='titles' id='selection1'>Selection 1</div>"),
                          pickerInput("district", "Area", sort(as.character(districtList)), options = list("actions-box" = TRUE), multiple = FALSE, selected="Edinburgh, City of"),
                          pickerInput("year", "Year", yearList, options = list("actions-box" = TRUE), selected=c(2010:2016), multiple = TRUE),
                          pickerInput("day", "Day of Week", levels(dayList), options = list("actions-box" = TRUE), multiple = TRUE, selected = dayList),
                          HTML("<br>"),
-                         HTML("<div class='titles'>Selection 2</div>"),
+                         HTML("<div class='titles' id='selection2'>Selection 2</div>"),
                          pickerInput("district2", "Area", sort(as.character(districtList)), options = list("actions-box" = TRUE), multiple = FALSE, selected="Glasgow City"),
                          pickerInput("year2", "Year", yearList, options = list("actions-box" = TRUE), selected=c(2010:2016), multiple = TRUE),
-                         pickerInput("day2", "Day of Week", levels(dayList), options = list("actions-box" = TRUE), multiple = TRUE, selected = dayList)
+                         pickerInput("day2", "Day of Week", levels(dayList), options = list("actions-box" = TRUE), multiple = TRUE, selected = dayList),
+                         bsTooltip("selection1", 
+                                  "Choose any combination of Area, Year and Day of Week.", placement = "bottom", trigger = "hover",
+                                  options = NULL),
+                         bsTooltip("selection2", 
+                                  "Choose any combination of Area, Year and Day of Week.", placement = "bottom", trigger = "hover",
+                                  options = NULL)
                         
                          ),
                       
                       dashboardBody(
-                        
+
                         fluidRow(
                           valueBoxOutput("info1", width = 6),
                           valueBoxOutput("info2", width = 6)
@@ -55,15 +67,21 @@ library(shinyBS)
                             ,status = "primary"
                             ,solidHeader = TRUE 
                             ,collapsible = FALSE 
-                            ,plotOutput("overTime", height = "300px")
-                          )
-                          ,box(
+                            ,plotOutput("overTime", height = "300px") %>% withSpinner(color="#3c8dbc")
+                          ), 
+                          bsTooltip("overTime", 
+                                    "Each bar represents the % of daily accidents that happen in a given 1-hour segment.", placement = "bottom", trigger = "hover",
+                                    options = NULL),
+                          box(
                             title = "Distribution of Accidents Across Months"
                             ,status = "primary"
                             ,solidHeader = TRUE 
                             ,collapsible = FALSE 
-                            ,plotOutput("overMonth", height = "300px")
-                          ) 
+                            ,plotOutput("overMonth", height = "300px") %>% withSpinner(color="#3c8dbc")
+                          ),
+                          bsTooltip("overMonth", 
+                                    "Each bar shows what % of the total number of accidents within a year happen in each respective month.", placement = "bottom", trigger = "hover",
+                                    options = NULL)
                         ),
                         fluidRow( 
                           box(
@@ -71,15 +89,21 @@ library(shinyBS)
                             ,status = "primary"
                             ,solidHeader = TRUE 
                             ,collapsible = FALSE 
-                            ,plotOutput("byManoeuvre", height = "300px")
-                          )
-                          ,box(
+                            ,plotOutput("byManoeuvre", height = "300px") %>% withSpinner(color="#3c8dbc")
+                          ),
+                          bsTooltip("byManoeuvre", 
+                                    "The most frequently performed driving manoeuvres during accidents.", placement = "bottom", trigger = "hover",
+                                    options = NULL),
+                          box(
                             title = "Road Surface Conditions During Accident"
                             ,status = "primary"
                             ,solidHeader = TRUE 
                             ,collapsible = FALSE 
-                            ,plotOutput("byRoadSurface", height = "300px")
-                          ) 
+                            ,plotOutput("byRoadSurface", height = "300px") %>% withSpinner(color="#3c8dbc")
+                          ),
+                          bsTooltip("byRoadSurface", 
+                                    "The most frequent road surface conditions during accidents.", placement = "bottom", trigger = "hover",
+                                    options = NULL)
                         ),
                         fluidRow(
                           box(
@@ -88,11 +112,16 @@ library(shinyBS)
                             solidHeader = TRUE,
                             collapsible = FALSE,
                             width = 12,
-                            plotOutput("riskEstimation", height = "300px")
-                          )
+                            plotOutput("riskEstimation", height = "300px") %>% withSpinner(color="#3c8dbc")
+                          ),
+                          bsTooltip("riskEstimation", 
+                                    "A random forest has been trained to predict the probability that an accident will occur in any given 6-hour interval.", placement = "top", trigger = "hover",
+                                    options = NULL)
                         ),
                         tags$head(tags$style(HTML('.titles {font-weight:bold; text-align:center;
-                                                  background-image: linear-gradient(#3c8dbc, #222d32)}')))
+                                                  background-image: linear-gradient(#3c8dbc, #222d32)}')),
+                                  tags$style(HTML('#about {background-color: #3c8dbc; font-weight:bold; color:white;}')),
+                                  tags$style(HTML('div[role=tooltip] {font-weight:bold; color:white;}')))
                         
                       ))
                     
