@@ -16,6 +16,7 @@ accidentData<-accidentData%>%
   mutate(TimeSegment=strftime(TimeSegment, format = "%H:%M"),
          Month=factor(month.abb[as.numeric(format(as.Date(Date), "%m"))], levels=month.abb))
 
+levels(accidentData$Local_Authority_.District.) <- gsub("Edinburgh, City of", "Edinburgh", levels(accidentData$Local_Authority_.District.))
 
 vehicleData<-vehicleData%>%filter(Accident_Index %in% accidentData$Accident_Index)%>%
   select(Accident_Index, Vehicle_Manoeuvre)%>%

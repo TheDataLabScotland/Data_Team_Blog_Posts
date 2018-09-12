@@ -28,7 +28,7 @@ library(shinycssloaders)
                         useShinyalert(),
                          HTML("<br>"),
                          HTML("<div class='titles' id='selection1'>Selection 1</div>"),
-                         pickerInput("district", "Area", sort(as.character(districtList)), options = list("actions-box" = TRUE), multiple = FALSE, selected="Edinburgh, City of"),
+                         pickerInput("district", "Area", sort(as.character(districtList)), options = list("actions-box" = TRUE), multiple = FALSE, selected="Edinburgh"),
                          pickerInput("year", "Year", yearList, options = list("actions-box" = TRUE), selected=c(2010:2016), multiple = TRUE),
                          pickerInput("day", "Day of Week", levels(dayList), options = list("actions-box" = TRUE), multiple = TRUE, selected = dayList),
                          HTML("<br>"),
@@ -63,14 +63,14 @@ library(shinycssloaders)
                         ),
                         fluidRow( 
                           box(
-                            title = "Distribution of Accidents During the Day"
+                            title = "Accident Frequency by Hour"
                             ,status = "primary"
                             ,solidHeader = TRUE 
                             ,collapsible = FALSE 
                             ,plotOutput("overTime", height = "300px") %>% withSpinner(color="#3c8dbc")
                           ), 
                           bsTooltip("overTime", 
-                                    "Each bar represents the % of daily accidents that happen in a given 1-hour segment.", placement = "bottom", trigger = "hover",
+                                    "The height of the curve represents the % of daily accidents that happen that time of the day.", placement = "bottom", trigger = "hover",
                                     options = NULL),
                           box(
                             title = "Distribution of Accidents Across Months"

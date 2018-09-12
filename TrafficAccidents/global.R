@@ -23,6 +23,8 @@ yearList<-unique(accidentData$Year)
 
 hourList<-c("12am-6am", "6am-12pm", "12pm-6pm", "6pm-12am")
 
+
+
 bankHolidayList<-read.xlsx("data/BankHolidaysScotland.xlsx", sheetIndex = 1)
 
 

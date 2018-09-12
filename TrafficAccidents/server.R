@@ -243,14 +243,15 @@ function(input, output, session) {
     allAccidents<-rbind(accidents1(), accidents2())
     allAccidents$group<-c(rep(graphLabel1(), nrow(accidents1())), rep(graphLabel2(), nrow(accidents2())))
 
-    allAccidents<-allAccidents%>%group_by(group)%>%mutate(totalNumOfAccidents=n())%>%
-      group_by(group, TimeSegment)%>%summarise(percentage=n()/max(totalNumOfAccidents))%>%filter(!is.na(TimeSegment))
-
-    ggplot(allAccidents, aes(x=TimeSegment, y=percentage, fill=group))+
-      geom_bar(stat = "identity", position = "identity", alpha = 0.5)+
+    allAccidents<-allAccidents%>%mutate(timeOrder=as.numeric(gsub(":.*", "", TimeSegment)))
+    
+    ggplot(allAccidents, aes(x=timeOrder, fill=group))+
+      geom_density(alpha = 0.3)+
       scale_y_continuous(labels=percent)+
       labs(x="", y="", fill="")+
-      theme_traffic()
+      theme_traffic()+
+      scale_x_continuous(breaks=c(0:23))+
+      theme(axis.text.x=element_text(angle=0))
   })
   
   output$overMonth <- renderPlot({
@@ -261,7 +262,7 @@ function(input, output, session) {
       group_by(group, Month)%>%summarise(percentage=n()/max(totalNumOfAccidents))%>%filter(!is.na(Month))
     
     ggplot(allAccidents, aes(x=reorder(as.character(Month), as.numeric(Month)), y=percentage, fill=group))+
-      geom_bar(stat = "identity", position = "identity", alpha = 0.5)+
+      geom_bar(stat = "identity", position = "identity", alpha = 0.3)+
       scale_y_continuous(labels=percent, limits = c(0, 0.12))+
       labs(x="", y="", fill="")+
       theme_traffic()
@@ -277,8 +278,8 @@ function(input, output, session) {
       mutate(Road_Surface_Conditions=factor(Road_Surface_Conditions, levels=c("Snow", "Frost or ice", "Wet or damp", "Dry")))
     
     ggplot(allAccidents, aes(x=Road_Surface_Conditions, y=percentage, fill=group))+
-      geom_bar(stat = "identity", position = "identity", alpha = 0.5)+
-      scale_y_continuous(labels=percent)+#, limits = c(0, 0.3)
+      geom_bar(stat = "identity", position = "dodge", alpha = 0.5)+
+      scale_y_continuous(labels=percent)+
       labs(x="", y="", fill="")+
       theme_traffic()
   })
