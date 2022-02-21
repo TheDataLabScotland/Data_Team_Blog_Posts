@@ -1,5 +1,5 @@
 library(dplyr)
-library(xlsx)
+library(openxlsx)
 
 # read data from local rds files
 accidentData <- readRDS("data/accidentData.rds")
