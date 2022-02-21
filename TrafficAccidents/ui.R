@@ -15,8 +15,8 @@ library(shinycssloaders)
                                           tags$li(class = "dropdown",
                                                   tags$li(class = "dropdown",
                                                           socialButton(
-                                                            url = "http://github.com/TheDataLabScotland/Data_Team_Blog_Posts/tree/master/TrafficAccidents",
-                                                            type = "github"
+                                                            href = "http://github.com/TheDataLabScotland/Data_Team_Blog_Posts/tree/master/TrafficAccidents",
+                                                            icon = icon(icon"github")
                                                           ),
                                                           style = "padding-top: 7px; padding-bottom: 5px; padding-right: 20px; "),
                                                   tags$li(class = "dropdown",
